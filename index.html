@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YKTFLOW - Подписки</title>
+    <script src="https://jsdelivr.net"></script>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: #eee; text-align: center; padding: 20px; }
+        .card { background: #1e1e1e; border-radius: 15px; padding: 20px; margin: 20px auto; max-width: 400px; border: 1px solid #333; }
+        h1 { color: #00ff88; }
+        .btn { background: #00ff88; color: #000; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        .url-box { background: #000; padding: 10px; border-radius: 5px; font-size: 0.8em; margin: 10px 0; word-break: break-all; color: #888; }
+        #qrcode-mobile, #qrcode-wifi { background: white; padding: 10px; display: inline-block; margin-top: 15px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>⚡️ YKTFLOW</h1>
+    <p>Бесплатные и быстрые конфиги для Xray</p>
+
+    <!-- Карточка для Мобилы -->
+    <div class="card">
+        <h2>📱 Mobile Subscription</h2>
+        <div class="url-box" id="url-mobile">https://githubusercontent.com</div>
+        <button class="btn" onclick="copy('url-mobile')">Копировать ссылку</button>
+        <div id="qrcode-mobile"></div>
+    </div>
+
+    <!-- Карточка для WIFI -->
+    <div class="card">
+        <h2>🌐 WIFI Subscription</h2>
+        <div class="url-box" id="url-wifi">https://githubusercontent.com</div>
+        <button class="btn" onclick="copy('url-wifi')">Копировать ссылку</button>
+        <div id="qrcode-wifi"></div>
+    </div>
+
+    <script>
+        function copy(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text);
+            alert("Ссылка скопирована!");
+        }
+
+        // Генерим QR-коды при загрузке
+        new QRCode(document.getElementById("qrcode-mobile"), document.getElementById("url-mobile").innerText);
+        new QRCode(document.getElementById("qrcode-wifi"), document.getElementById("url-wifi").innerText);
+    </script>
+</body>
+</html>
