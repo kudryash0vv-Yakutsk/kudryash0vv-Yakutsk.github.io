@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YKTFLOW | Frozen Configs</title>
-    <!-- Подключаем QR библиотеку правильно -->
+    <!-- Библиотека для QR -->
     <script src="https://jsdelivr.net"></script>
     <style>
         :root { --cold-blue: #00d4ff; --ice-white: #e0f7fa; --dark-depth: #050a14; }
@@ -79,18 +79,20 @@
         <h1>YKTFLOW</h1>
         <p class="status">❄️ Замороженные конфиги • Обновлено: каждые 4ч</p>
 
+        <!-- WIFI -->
         <div class="card">
             <h2>🧊 WIFI Subscription</h2>
             <div id="count-wifi" class="count">Чекаем лед...</div>
-            <div class="url-box" id="url-wifi">https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/refs/heads/main/configs/wifi_ykt.%23119.txt?token=GHSAT0AAAAAAD3LL6KIKQ7CRXRQQDRTSBR62PLKFGA</div>
+            <div class="url-box" id="url-wifi">https://githubusercontent.com</div>
             <button class="btn" onclick="copy('url-wifi', this)">СКОПИРОВАТЬ ССЫЛКУ</button>
             <center><div id="qr-wifi" class="qr-area"></div></center>
         </div>
 
+        <!-- MOBILE -->
         <div class="card">
             <h2>📱 Mobile Net</h2>
             <div id="count-mobile" class="count">Чекаем лед...</div>
-            <div class="url-box" id="url-mobile">https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/refs/heads/main/configs/kudryash0vv_YKTFLOW_1.txt?token=GHSAT0AAAAAAD3LL6KJLPT27W7Y5OIFV7W42PLKIYQ</div>
+            <div class="url-box" id="url-mobile">https://githubusercontent.com</div>
             <button class="btn" onclick="copy('url-mobile', this)">СКОПИРОВАТЬ ССЫЛКУ</button>
             <center><div id="qr-mobile" class="qr-area"></div></center>
         </div>
@@ -139,15 +141,13 @@
             setTimeout(() => { btn.innerText = oldText; }, 2000);
         }
 
-        // Функция чтения Base64 и подсчета узлов
+        // Счетчик узлов для обычного текста
         async function loadStats(id, file) {
             try {
                 const res = await fetch(`https://githubusercontent.com{file}`);
-                const base64Data = await res.text();
-                // Декодируем Base64
-                const decoded = atob(base64Data.trim());
-                // Считаем только строки с конфигами (vless, vmess и т.д.)
-                const count = decoded.split('\n').filter(l => l.includes('://')).length;
+                const text = await res.text();
+                // Считаем строки, где есть конфиг (://)
+                const count = text.split('\n').filter(l => l.includes('://')).length;
                 document.getElementById('count-' + id).innerText = `ДОСТУПНО УЗЛОВ: ${count}`;
             } catch (e) {
                 document.getElementById('count-' + id).innerText = `ОБНОВЛЕНИЕ...`;
