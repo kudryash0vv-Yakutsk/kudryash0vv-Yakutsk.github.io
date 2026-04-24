@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YKTFLOW | Frozen Configs</title>
+    <!-- Подключаем QR библиотеку правильно -->
     <script src="https://jsdelivr.net"></script>
     <style>
         :root { --cold-blue: #00d4ff; --ice-white: #e0f7fa; --dark-depth: #050a14; }
@@ -20,9 +21,7 @@
             overflow-x: hidden;
         }
 
-        /* Анимация снега */
         #snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-
         .container { width: 100%; max-width: 500px; padding: 20px; box-sizing: border-box; z-index: 1; }
         
         h1 { 
@@ -47,9 +46,7 @@
         }
 
         .card:hover { border-color: var(--cold-blue); box-shadow: 0 0 25px rgba(0, 212, 255, 0.2); }
-
         h2 { margin: 0 0 10px 0; font-size: 1.4em; display: flex; align-items: center; gap: 10px; }
-        
         .count { color: var(--cold-blue); font-weight: bold; margin-bottom: 15px; font-size: 0.85em; text-transform: uppercase; }
 
         .url-box { 
@@ -66,14 +63,8 @@
 
         .btn { 
             background: linear-gradient(135deg, #00d4ff 0%, #0077ff 100%);
-            color: white; 
-            border: none; 
-            padding: 14px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            width: 100%; 
-            font-size: 1em; 
+            color: white; border: none; padding: 14px; border-radius: 12px; 
+            cursor: pointer; font-weight: bold; width: 100%; font-size: 1em; 
             box-shadow: 0 4px 15px rgba(0, 119, 255, 0.3);
         }
 
@@ -88,27 +79,25 @@
         <h1>YKTFLOW</h1>
         <p class="status">❄️ Замороженные конфиги • Обновлено: каждые 4ч</p>
 
-        <!-- WIFI -->
         <div class="card">
             <h2>🧊 WIFI Subscription</h2>
             <div id="count-wifi" class="count">Чекаем лед...</div>
-            <div class="url-box" id="url-wifi">https://githubusercontent.com</div>
+            <div class="url-box" id="url-wifi">https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/refs/heads/main/configs/wifi_ykt.%23119.txt?token=GHSAT0AAAAAAD3LL6KIKQ7CRXRQQDRTSBR62PLKFGA</div>
             <button class="btn" onclick="copy('url-wifi', this)">СКОПИРОВАТЬ ССЫЛКУ</button>
             <center><div id="qr-wifi" class="qr-area"></div></center>
         </div>
 
-        <!-- MOBILE -->
         <div class="card">
             <h2>📱 Mobile Net</h2>
             <div id="count-mobile" class="count">Чекаем лед...</div>
-            <div class="url-box" id="url-mobile">https://githubusercontent.com</div>
+            <div class="url-box" id="url-mobile">https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/refs/heads/main/configs/kudryash0vv_YKTFLOW_1.txt?token=GHSAT0AAAAAAD3LL6KJLPT27W7Y5OIFV7W42PLKIYQ</div>
             <button class="btn" onclick="copy('url-mobile', this)">СКОПИРОВАТЬ ССЫЛКУ</button>
             <center><div id="qr-mobile" class="qr-area"></div></center>
         </div>
     </div>
 
     <script>
-        // Снег
+        // Анимация снега
         const canvas = document.getElementById('snow');
         const ctx = canvas.getContext('2d');
         let width, height, snowflakes = [];
@@ -117,10 +106,8 @@
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
             snowflakes = Array(150).fill().map(() => ({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                r: Math.random() * 3 + 1,
-                d: Math.random() * 1
+                x: Math.random() * width, y: Math.random() * height,
+                r: Math.random() * 3 + 1, d: Math.random() * 1
             }));
         }
 
@@ -128,28 +115,22 @@
             ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = 'white';
             ctx.beginPath();
-            snowflakes.forEach(f => {
-                ctx.moveTo(f.x, f.y);
-                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-            });
+            snowflakes.forEach(f => { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); });
             ctx.fill();
             updateSnow();
         }
 
         function updateSnow() {
             snowflakes.forEach(f => {
-                f.y += Math.cos(f.d) + 1 + f.r / 2;
-                f.x += Math.sin(f.d) * 2;
+                f.y += Math.cos(f.d) + 1 + f.r / 2; f.x += Math.sin(f.d) * 2;
                 if (f.y > height) { f.y = -10; f.x = Math.random() * width; }
             });
             requestAnimationFrame(drawSnow);
         }
 
         window.onresize = initSnow;
-        initSnow();
-        drawSnow();
+        initSnow(); drawSnow();
 
-        // Функционал
         function copy(id, btn) {
             const text = document.getElementById(id).innerText;
             navigator.clipboard.writeText(text);
@@ -158,11 +139,15 @@
             setTimeout(() => { btn.innerText = oldText; }, 2000);
         }
 
+        // Функция чтения Base64 и подсчета узлов
         async function loadStats(id, file) {
             try {
                 const res = await fetch(`https://githubusercontent.com{file}`);
-                const text = await res.text();
-                const count = text.split('\n').filter(l => l.trim().length > 0).length;
+                const base64Data = await res.text();
+                // Декодируем Base64
+                const decoded = atob(base64Data.trim());
+                // Считаем только строки с конфигами (vless, vmess и т.д.)
+                const count = decoded.split('\n').filter(l => l.includes('://')).length;
                 document.getElementById('count-' + id).innerText = `ДОСТУПНО УЗЛОВ: ${count}`;
             } catch (e) {
                 document.getElementById('count-' + id).innerText = `ОБНОВЛЕНИЕ...`;
