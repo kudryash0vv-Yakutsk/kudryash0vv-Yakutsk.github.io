@@ -1,40 +1,54 @@
-<script src="https://cdn.jsdelivr.net/npm/qrcode_js@1.0.0/qrcode.min.js"></script>
-
 <script>
-    // --- СНЕГ (Оставляем без изменений) ---
-    const canvas = document.getElementById('snow');
-    const ctx = canvas.getContext('2d');
-    let width, height, snowflakes = [];
+    // Ждем полной загрузки HTML, чтобы не было ошибки "getContext"
+    window.addEventListener('DOMContentLoaded', () => {
+        
+        // --- СНЕГ ---
+        const canvas = document.getElementById('snow');
+        const ctx = canvas.getContext('2d');
+        let width, height, snowflakes = [];
 
-    function initSnow() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-        snowflakes = Array(150).fill().map(() => ({
-            x: Math.random() * width, y: Math.random() * height,
-            r: Math.random() * 3 + 1, d: Math.random() * 1
-        }));
-    }
+        function initSnow() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            snowflakes = Array(150).fill().map(() => ({
+                x: Math.random() * width, y: Math.random() * height,
+                r: Math.random() * 3 + 1, d: Math.random() * 1
+            }));
+        }
 
-    function drawSnow() {
-        ctx.clearRect(0, 0, width, height);
-        ctx.fillStyle = 'white';
-        ctx.beginPath();
-        snowflakes.forEach(f => { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); });
-        ctx.fill();
-        updateSnow();
-    }
+        function drawSnow() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            snowflakes.forEach(f => { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); });
+            ctx.fill();
+            updateSnow();
+        }
 
-    function updateSnow() {
-        snowflakes.forEach(f => {
-            f.y += Math.cos(f.d) + 1 + f.r / 2; f.x += Math.sin(f.d) * 2;
-            if (f.y > height) { f.y = -10; f.x = Math.random() * width; }
-        });
-        requestAnimationFrame(drawSnow);
-    }
-    window.onresize = initSnow;
-    initSnow(); drawSnow();
+        function updateSnow() {
+            snowflakes.forEach(f => {
+                f.y += Math.cos(f.d) + 1 + f.r / 2; f.x += Math.sin(f.d) * 2;
+                if (f.y > height) { f.y = -10; f.x = Math.random() * width; }
+            });
+            requestAnimationFrame(drawSnow);
+        }
 
-    // --- ФУНКЦИОНАЛ САЙТА ---
+        window.onresize = initSnow;
+        initSnow();
+        drawSnow();
+
+        // Генерим QR и запускаем статку
+        const urlW = document.getElementById("url-wifi").innerText;
+        const urlM = document.getElementById("url-mobile").innerText;
+        
+        new QRCode(document.getElementById("qr-wifi"), { text: urlW, width: 160, height: 160 });
+        new QRCode(document.getElementById("qr-mobile"), { text: urlM, width: 160, height: 160 });
+
+        loadStats('wifi', 'kudryash0vv_YKTFLOW_1.txt');
+        loadStats('mobile', 'kudryash0vv_YKTFLOW_mobile.txt');
+    });
+
+    // --- ФУНКЦИОНАЛ ВНЕ ЗАГРУЗКИ ---
     function copy(id, btn) {
         const text = document.getElementById(id).innerText;
         navigator.clipboard.writeText(text);
@@ -43,16 +57,14 @@
         setTimeout(() => { btn.innerText = oldText; }, 2000);
     }
 
-    // Исправленная функция для чтения конфигов из ДРУГОГО репозитория
     async function loadStats(id, file) {
         try {
-            // Указываем ПРЯМОЙ путь к репозиторию с конфигами (УДАЛИ ПРОБЕЛЫ ПРИ ВСТАВКЕ)
-            const url = "https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/"+ file;
+            // УДАЛИ ПРОБЕЛЫ В ССЫЛКЕ НИЖЕ
+            const url = "https:// raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/" + file;
             
             const res = await fetch(url);
             let text = await res.text();
             
-            // Проверка: если файл в Base64 (начинается не с протокола), декодируем
             if (!text.trim().startsWith("vless") && !text.trim().startsWith("profile") && !text.trim().startsWith("ss")) {
                 text = atob(text.trim());
             }
@@ -64,14 +76,4 @@
             document.getElementById('count-' + id).innerText = `ОБНОВЛЕНИЕ...`;
         }
     }
-
-    // Генерим QR и запускаем статку
-    const urlW = document.getElementById("url-wifi").innerText;
-    const urlM = document.getElementById("url-mobile").innerText;
-    
-    new QRCode(document.getElementById("qr-wifi"), { text: urlW, width: 160, height: 160 });
-    new QRCode(document.getElementById("qr-mobile"), { text: urlM, width: 160, height: 160 });
-
-    loadStats('wifi', 'kudryash0vv_YKTFLOW_1.txt');
-    loadStats('mobile', 'kudryash0vv_YKTFLOW_mobile.txt');
 </script>
