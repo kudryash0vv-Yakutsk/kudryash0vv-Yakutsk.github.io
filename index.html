@@ -1,10 +1,8 @@
 <script>
     window.addEventListener('DOMContentLoaded', () => {
-        // --- 1. СНЕГ ---
+        // --- 1. СНЕГ (Запускается сразу) ---
         const canvas = document.getElementById('snow');
-        if (!canvas) {
-            console.warn("⚠️ Холст #snow не найден.");
-        } else {
+        if (canvas) {
             const ctx = canvas.getContext('2d');
             let width, height, snowflakes = [];
             function initSnow() {
@@ -23,22 +21,9 @@
             window.onresize = initSnow; initSnow(); drawSnow();
         }
 
-        // --- 2. QR И СТАТИСТИКА (С ЗАЩИТОЙ) ---
-        const wifiBox = document.getElementById("url-wifi");
-        const mobileBox = document.getElementById("url-mobile");
-
-        if (wifiBox && mobileBox) {
-            const urlW = wifiBox.innerText.trim();
-            const urlM = mobileBox.innerText.trim();
-            
-            new QRCode(document.getElementById("qr-wifi"), { text: urlW, width: 160, height: 160 });
-            new QRCode(document.getElementById("qr-mobile"), { text: urlM, width: 160, height: 160 });
-
-            loadStats('wifi', 'kudryash0vv_YKTFLOW_1.txt');
-            loadStats('mobile', 'kudryash0vv_YKTFLOW_mobile.txt');
-        } else {
-            console.error("❌ Не найдены блоки url-wifi или url-mobile!");
-        }
+        // --- 2. ЗАПУСК СЧЕТЧИКОВ ---
+        loadStats('wifi', 'kudryash0vv_YKTFLOW_1.txt');
+        loadStats('mobile', 'kudryash0vv_YKTFLOW_mobile.txt');
     });
 
     // --- 3. ФУНКЦИИ ---
@@ -47,26 +32,29 @@
         if (el) {
             navigator.clipboard.writeText(el.innerText);
             btn.innerText = "ГОТОВО!";
-            setTimeout(() => { btn.innerText = "СКОПИРОВАТЬ"; }, 2000);
+            setTimeout(() => { btn.innerText = "СКОПИРОВАТЬ ССЫЛКУ"; }, 2000);
         }
     }
 
     async function loadStats(id, file) {
         try {
-            // УДАЛИ ПРОБЕЛЫ В ССЫЛКЕ
-            const url = "https://raw.githubusercontent.comkudryash0vv/kudryash0vv.YKTFLOW/main/configs/" + file;
+            // УДАЛИ ПРОБЕЛЫ В ССЫЛКЕ ПРИ ВСТАВКЕ
+            const url = "https:// ://githubusercontent.com kudryash0vv/ kudryash0vv.YKTFLOW/ main/ configs/" + file;
             const res = await fetch(url);
-            let text = await res.text();
+            const data = await res.text();
             
-            if (!text.trim().startsWith("vless") && !text.trim().startsWith("profile") && !text.trim().startsWith("ss")) {
-                text = atob(text.trim());
+            // Если там Base64 — декодируем, если нет — берем как есть
+            let text = data;
+            if (!data.trim().startsWith("vless") && !data.trim().startsWith("profile") && !data.trim().startsWith("ss")) {
+                try { text = atob(data.trim()); } catch(e) { text = data; }
             }
 
             const count = text.split('\n').filter(l => l.includes('://')).length;
-            const countEl = document.getElementById('count-' + id);
-            if (countEl) countEl.innerText = `ДОСТУПНО УЗЛОВ: ${count}`;
+            const el = document.getElementById('count-' + id);
+            if (el) el.innerText = `ДОСТУПНО УЗЛОВ: ${count}`;
         } catch (e) {
-            document.getElementById('count-' + id).innerText = `ОБНОВЛЕНИЕ...`;
+            const el = document.getElementById('count-' + id);
+            if (el) el.innerText = `ОБНОВЛЕНИЕ...`;
         }
     }
 </script>
