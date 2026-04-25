@@ -39,7 +39,7 @@
     async function loadStats(id, file) {
         try {
             // УДАЛИ ПРОБЕЛЫ В ССЫЛКЕ ПРИ ВСТАВКЕ
-            const url = "https:// ://githubusercontent.com kudryash0vv/ kudryash0vv.YKTFLOW/ main/ configs/" + file;
+            const url = "https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/" + file;
             const res = await fetch(url);
             const data = await res.text();
             
