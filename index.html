@@ -69,25 +69,24 @@
         setTimeout(() => { btn.innerText = "СКОПИРОВАТЬ ССЫЛКУ"; }, 2000);
     }
 
-    // 2. Счетчик (с поддержкой Base64)
-    async function loadStats(id, file) {
-        try {
-            // УДАЛИ ПРОБЕЛЫ В ССЫЛКЕ НИЖЕ ПРИ ВСТАВКЕ!
-            const url = "https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/" + file;
-            const res = await fetch(url);
-            let text = await res.text();
-            
-            if (!text.includes("://")) {
-                try { text = atob(text.trim()); } catch(e) {}
-            }
-
-            const count = text.split('\n').filter(l => l.includes('://')).length;
-            const el = document.getElementById('count-' + id);
-            if (el) el.innerText = "ДОСТУПНО УЗЛОВ: " + count;
-        } catch (e) {
-            console.error(e);
-        }
+   async function loadStats(id, file) {
+    try {
+        // УДАЛИ ПРОБЕЛЫ В ССЫЛКЕ НИЖЕ
+        const url = "https:// ://githubusercontent.com kudryash0vv/ kudryash0vv.YKTFLOW/ main/ configs/" + file;
+        const res = await fetch(url);
+        const text = await res.text();
+        
+        // Считаем только живые конфиги (те, что содержат :// и НЕ начинаются с #)
+        const count = text.split('\n').filter(l => l.includes('://') && !l.trim().startsWith('#')).length;
+        
+        const el = document.getElementById('count-' + id);
+        if (el) el.innerText = "ДОСТУПНО УЗЛОВ: " + count;
+    } catch (e) {
+        const el = document.getElementById('count-' + id);
+        if (el) el.innerText = "ОБНОВЛЕНИЕ...";
     }
+}
+
 
     // 3. Снег
     function initSnow() {
