@@ -1,4 +1,5 @@
-<script src="https://jsdelivr.net"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode_js@1.0.0/qrcode.min.js"></script>
+
 <script>
     // --- СНЕГ (Оставляем без изменений) ---
     const canvas = document.getElementById('snow');
@@ -45,13 +46,14 @@
     // Исправленная функция для чтения конфигов из ДРУГОГО репозитория
     async function loadStats(id, file) {
         try {
-            // Указываем ПРЯМОЙ путь к репозиторию с конфигами
-            const url = `https://githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/${file}`;
+            // Указываем ПРЯМОЙ путь к репозиторию с конфигами (УДАЛИ ПРОБЕЛЫ ПРИ ВСТАВКЕ)
+            const url = "https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/"+ file;
+            
             const res = await fetch(url);
             let text = await res.text();
             
             // Проверка: если файл в Base64 (начинается не с протокола), декодируем
-            if (!text.trim().startsWith("vless") && !text.trim().startsWith("profile")) {
+            if (!text.trim().startsWith("vless") && !text.trim().startsWith("profile") && !text.trim().startsWith("ss")) {
                 text = atob(text.trim());
             }
 
