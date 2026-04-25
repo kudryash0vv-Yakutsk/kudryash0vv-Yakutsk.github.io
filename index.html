@@ -1,60 +1,139 @@
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-        // --- 1. СНЕГ (Запускается сразу) ---
-        const canvas = document.getElementById('snow');
-        if (canvas) {
-            const ctx = canvas.getContext('2d');
-            let width, height, snowflakes = [];
-            function initSnow() {
-                width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight;
-                snowflakes = Array(150).fill().map(() => ({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 3 + 1, d: Math.random() * 1 }));
-            }
-            function drawSnow() {
-                ctx.clearRect(0, 0, width, height); ctx.fillStyle = 'white'; ctx.beginPath();
-                snowflakes.forEach(f => { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); });
-                ctx.fill(); updateSnow();
-            }
-            function updateSnow() {
-                snowflakes.forEach(f => { f.y += Math.cos(f.d) + 1 + f.r / 2; f.x += Math.sin(f.d) * 2; if (f.y > height) { f.y = -10; f.x = Math.random() * width; } });
-                requestAnimationFrame(drawSnow);
-            }
-            window.onresize = initSnow; initSnow(); drawSnow();
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YKTFLOW | Frozen Configs</title>
+    <style>
+        :root { --cold-blue: #00d4ff; --ice-white: #e0f7fa; --dark-depth: #050a14; }
+        
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: radial-gradient(circle at center, #0a192f 0%, var(--dark-depth) 100%);
+            color: var(--ice-white); 
+            margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden;
         }
 
-        // --- 2. ЗАПУСК СЧЕТЧИКОВ ---
-        loadStats('wifi', 'kudryash0vv_YKTFLOW_1.txt');
-        loadStats('mobile', 'kudryash0vv_YKTFLOW_mobile.txt');
-    });
+        /* Тот самый холст для снега */
+        #snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 
-    // --- 3. ФУНКЦИИ ---
+        .container { width: 100%; max-width: 500px; padding: 20px; box-sizing: border-box; z-index: 1; }
+        h1 { color: var(--ice-white); font-size: 2.8em; margin-bottom: 5px; text-shadow: 0 0 15px var(--cold-blue); text-align: center; }
+        .status { text-align: center; font-size: 0.85em; color: var(--cold-blue); margin-bottom: 30px; opacity: 0.8; }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
+            border-radius: 24px; padding: 25px; margin-bottom: 25px; border: 1px solid rgba(0, 212, 255, 0.2); 
+        }
+        .count { color: var(--cold-blue); font-weight: bold; margin-bottom: 15px; font-size: 0.85em; text-transform: uppercase; }
+        .url-box { 
+            background: rgba(0, 0, 0, 0.4); padding: 12px; border-radius: 12px; font-family: monospace; 
+            font-size: 0.7em; word-break: break-all; color: #6a8caf; margin-bottom: 15px; 
+        }
+        .btn { 
+            background: linear-gradient(135deg, #00d4ff 0%, #0077ff 100%);
+            color: white; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; 
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Холст добавлен! -->
+    <canvas id="snow"></canvas>
+
+    <div class="container">
+        <h1>YKTFLOW</h1>
+        <p class="status">❄️ Замороженные конфиги • 825 GB Premium</p>
+
+        <div class="card">
+            <h2>🧊 WIFI Subscription</h2>
+            <div id="count-wifi" class="count">ЗАГРУЗКА...</div>
+            <div class="url-box" id="url-wifi">https://githubusercontent.com</div>
+            <button class="btn" onclick="copy('url-wifi', this)">СКОПИРОВАТЬ ССЫЛКУ</button>
+        </div>
+
+        <div class="card">
+            <h2>📱 Mobile Subscription</h2>
+            <div id="count-mobile" class="count">ЗАГРУЗКА...</div>
+            <div class="url-box" id="url-mobile">https://githubusercontent.com</div>
+            <button class="btn" onclick="copy('url-mobile', this)">СКОПИРОВАТЬ ССЫЛКУ</button>
+        </div>
+    </div>
+
+    <script>
+    // 1. Копирование
     function copy(id, btn) {
-        const el = document.getElementById(id);
-        if (el) {
-            navigator.clipboard.writeText(el.innerText);
-            btn.innerText = "ГОТОВО!";
-            setTimeout(() => { btn.innerText = "СКОПИРОВАТЬ ССЫЛКУ"; }, 2000);
-        }
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text);
+        btn.innerText = "ГОТОВО!";
+        setTimeout(() => { btn.innerText = "СКОПИРОВАТЬ ССЫЛКУ"; }, 2000);
     }
 
+    // 2. Счетчик (с поддержкой Base64)
     async function loadStats(id, file) {
         try {
-            // УДАЛИ ПРОБЕЛЫ В ССЫЛКЕ ПРИ ВСТАВКЕ
+            // УДАЛИ ПРОБЕЛЫ В ССЫЛКЕ НИЖЕ ПРИ ВСТАВКЕ!
             const url = "https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/" + file;
             const res = await fetch(url);
-            const data = await res.text();
+            let text = await res.text();
             
-            // Если там Base64 — декодируем, если нет — берем как есть
-            let text = data;
-            if (!data.trim().startsWith("vless") && !data.trim().startsWith("profile") && !data.trim().startsWith("ss")) {
-                try { text = atob(data.trim()); } catch(e) { text = data; }
+            if (!text.includes("://")) {
+                try { text = atob(text.trim()); } catch(e) {}
             }
 
             const count = text.split('\n').filter(l => l.includes('://')).length;
             const el = document.getElementById('count-' + id);
-            if (el) el.innerText = `ДОСТУПНО УЗЛОВ: ${count}`;
+            if (el) el.innerText = "ДОСТУПНО УЗЛОВ: " + count;
         } catch (e) {
-            const el = document.getElementById('count-' + id);
-            if (el) el.innerText = `ОБНОВЛЕНИЕ...`;
+            console.error(e);
         }
     }
-</script>
+
+    // 3. Снег
+    function initSnow() {
+        const canvas = document.getElementById('snow');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let width, height, snowflakes = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function create() {
+            snowflakes = Array(120).fill().map(() => ({
+                x: Math.random() * width, y: Math.random() * height,
+                r: Math.random() * 3 + 1, d: Math.random() * 1
+            }));
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            snowflakes.forEach(f => {
+                ctx.moveTo(f.x, f.y);
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            });
+            ctx.fill();
+            snowflakes.forEach(f => {
+                f.y += Math.cos(f.d) + 1 + f.r / 2;
+                f.x += Math.sin(f.d) * 2;
+                if (f.y > height) { f.y = -10; f.x = Math.random() * width; }
+            });
+            requestAnimationFrame(draw);
+        }
+        window.addEventListener('resize', resize);
+        resize(); create(); draw();
+    }
+
+    // Старт
+    window.onload = () => {
+        initSnow();
+        loadStats('wifi', 'kudryash0vv_YKTFLOW_1.txt');
+        loadStats('mobile', 'kudryash0vv_YKTFLOW_mobile.txt');
+    };
+    </script>
+</body>
+</html>
