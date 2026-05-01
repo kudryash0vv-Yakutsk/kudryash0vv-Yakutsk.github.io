@@ -4,61 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YKTFLOW | ULTRA DEEP ENGINE</title>
+    <!-- Подключаем библиотеку для графика -->
+    <script src="https://jsdelivr.net"></script>
     <style>
         :root { --blue: #00d4ff; --neon: #0077ff; --dark: #02060c; --glass: rgba(255, 255, 255, 0.03); }
-        
-        body { 
-            font-family: 'Consolas', monospace; background: var(--dark);
-            color: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-        }
-
+        body { font-family: 'Consolas', monospace; background: var(--dark); color: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
         #snow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.6; }
-
-        .container { width: 100%; max-width: 800px; padding: 40px 20px; z-index: 1; }
-        
-        header { text-align: center; margin-bottom: 50px; }
-        h1 { font-size: 4em; margin: 0; text-shadow: 0 0 30px var(--blue); letter-spacing: 10px; font-weight: 900; }
+        .container { width: 100%; max-width: 800px; padding: 40px 20px; z-index: 1; box-sizing: border-box; }
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { font-size: 3.5em; margin: 0; text-shadow: 0 0 30px var(--blue); letter-spacing: 8px; font-weight: 900; }
         .version { font-size: 0.8em; color: var(--blue); border: 1px solid var(--blue); padding: 2px 15px; border-radius: 50px; display: inline-block; margin-top: 10px; }
-
-        .system-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .system-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .stat-card { background: var(--glass); border: 1px solid rgba(0,212,255,0.1); padding: 15px; border-radius: 15px; text-align: center; backdrop-filter: blur(10px); }
-        .stat-card span { display: block; font-size: 1.5em; color: var(--blue); font-weight: bold; }
-        .stat-card label { font-size: 0.6em; text-transform: uppercase; opacity: 0.6; letter-spacing: 1px; }
-
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
-        @media (max-width: 600px) { .main-grid { grid-template-columns: 1fr; } }
-
-        .card { 
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%); 
-            backdrop-filter: blur(20px); border-radius: 30px; padding: 30px; border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.4s; position: relative;
-        }
-        .card:hover { border-color: var(--blue); transform: scale(1.02); box-shadow: 0 0 40px rgba(0,212,255,0.15); }
-        
-        .card h2 { font-size: 1.2em; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px; }
-        .url-box { background: #000; padding: 15px; border-radius: 15px; font-size: 0.65em; word-break: break-all; color: var(--blue); margin: 20px 0; border: 1px solid #111; }
-
-        .btn { 
-            background: #fff; color: #000; border: none; padding: 18px; border-radius: 15px; 
-            cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; font-size: 0.9em;
-        }
-        .btn:hover { background: var(--blue); color: #fff; box-shadow: 0 0 20px var(--blue); }
-
+        .stat-card span { display: block; font-size: 1.4em; color: var(--blue); font-weight: bold; }
+        .stat-card label { font-size: 0.6em; text-transform: uppercase; opacity: 0.6; }
+        .card { background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%); backdrop-filter: blur(20px); border-radius: 25px; padding: 25px; border: 1px solid rgba(255,255,255,0.1); transition: 0.4s; margin-bottom: 20px; }
+        .card:hover { border-color: var(--blue); box-shadow: 0 0 30px rgba(0,212,255,0.1); }
+        .url-box { background: #000; padding: 12px; border-radius: 12px; font-size: 0.7em; word-break: break-all; color: var(--blue); margin: 15px 0; border: 1px solid #111; }
+        .btn { background: #fff; color: #000; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        .btn:hover { background: var(--blue); color: #fff; }
+        .chart-container { height: 180px; margin-top: 10px; }
         .server-list { background: var(--glass); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .server-list h3 { font-size: 0.9em; margin-bottom: 20px; opacity: 0.8; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8em; }
         th { text-align: left; opacity: 0.4; padding-bottom: 10px; }
-        td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        td { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .speed-tag { color: #00ff88; font-weight: bold; }
-
-        .pulse { width: 8px; height: 8px; background: #00ff88; border-radius: 50%; display: inline-block; margin-right: 10px; box-shadow: 0 0 10px #00ff88; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+        .pulse { width: 8px; height: 8px; background: #00ff88; border-radius: 50%; display: inline-block; margin-right: 10px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
-
     <canvas id="snow"></canvas>
-
     <div class="container">
         <header>
             <h1>YKTFLOW</h1>
@@ -66,145 +42,106 @@
         </header>
 
         <div class="system-status">
-            <div class="stat-card"><span id="stat-nodes">--</span><label>Живых узлов</label></div>
+            <div class="stat-card"><span id="stat-nodes">--</span><label>Узлов</label></div>
             <div class="stat-card"><span id="stat-speed">--</span><label>Avg Speed</label></div>
             <div class="stat-card"><span id="stat-ping">--</span><label>Avg Ping</label></div>
-            <div class="stat-card"><span id="stat-countries">--</span><label>Локаций</label></div>
+            <div class="stat-card"><span id="stat-countries">--</span><label>ГЕО</label></div>
         </div>
 
-        <div class="main-grid">
-            <div class="card">
-                <h2>🧊 Home WiFi</h2>
+        <div class="card">
+            <label style="font-size: 0.7em; opacity: 0.5;">АКТИВНОСТЬ СЕТИ (24Ч)</label>
+            <div class="chart-container"><canvas id="loadChart"></canvas></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div class="card" style="margin-bottom: 0;">
+                <label style="font-size: 0.8em;">WIFI</label>
                 <div class="url-box" id="url-wifi">https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/kudryash0vv_YKTFLOW_1.txt</div>
-                <button class="btn" onclick="copy('url-wifi', this)">COPY LINK</button>
+                <button class="btn" onclick="copy('url-wifi', this)">COPY</button>
             </div>
-            <div class="card">
-                <h2>📱 Mobile Net</h2>
+            <div class="card" style="margin-bottom: 0;">
+                <label style="font-size: 0.8em;">MOBILE</label>
                 <div class="url-box" id="url-mobile">https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/kudryash0vv_YKTFLOW_mobile.txt</div>
-                <button class="btn" onclick="copy('url-mobile', this)">COPY LINK</button>
+                <button class="btn" onclick="copy('url-mobile', this)">COPY</button>
             </div>
         </div>
 
         <div class="server-list">
-            <h3>🛰 TOP NODES ANALYSIS (REAL-TIME)</h3>
             <table id="node-table">
-                <thead>
-                    <tr>
-                        <th>LOC</th>
-                        <th>SPEED</th>
-                        <th>PING</th>
-                        <th>STATUS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="4">Инициализация потоков...</td></tr>
-                </tbody>
+                <thead><tr><th>LOC</th><th>SPEED</th><th>PING</th><th>STATUS</th></tr></thead>
+                <tbody><tr><td colspan="4">Загрузка данных...</td></tr></tbody>
             </table>
         </div>
     </div>
 
     <script>
+        // --- СНЕГ ---
         const canvas = document.getElementById('snow');
         const ctx = canvas.getContext('2d');
         let width, height, snowflakes = [];
-
         function initSnow() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            snowflakes = Array(100).fill().map(() => ({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 1, d: Math.random() * 0.5 }));
+            width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight;
+            snowflakes = Array(80).fill().map(() => ({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 1, d: Math.random() * 0.5 }));
         }
-
         function drawSnow() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-            ctx.beginPath();
+            ctx.clearRect(0, 0, width, height); ctx.fillStyle = "rgba(255, 255, 255, 0.4)"; ctx.beginPath();
             snowflakes.forEach(f => { ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); });
-            ctx.fill();
-            updateSnow();
-        }
-
-        function updateSnow() {
-            snowflakes.forEach(f => { f.y += 1.5 + f.r / 2; if (f.y > height) f.y = -10; });
+            ctx.fill(); snowflakes.forEach(f => { f.y += 1 + f.r / 2; if (f.y > height) f.y = -10; });
             requestAnimationFrame(drawSnow);
         }
-
-        window.onresize = initSnow;
         initSnow(); drawSnow();
 
         function copy(id, btn) {
-            const text = document.getElementById(id).innerText.replace(/\s/g, '');
-            navigator.clipboard.writeText(text);
-            btn.innerText = "COPIED!";
-            setTimeout(() => { btn.innerText = "COPY LINK"; }, 2000);
+            navigator.clipboard.writeText(document.getElementById(id).innerText.replace(/\s/g, ''));
+            btn.innerText = "COPIED"; setTimeout(() => btn.innerText = "COPY", 2000);
         }
 
-                       async function analyze() {
-    try {
-        // УДАЛИ ПРОБЕЛЫ В ССЫЛКЕ НИЖЕ
-        const url = "https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/kudryash0vv_YKTFLOW_mobile.txt";
-        
-        const res = await fetch(url.replace(/\s/g, ''));
-        const text = await res.text();
-        const lines = text.split('\n').filter(l => l.includes('://') && !l.trim().startsWith('#'));
-        
-        let totalSpeed = 0;
-        let totalPing = 0;
-        let validNodes = 0;
-        let countries = new Set();
-        let tableRows = "";
+        // --- ЛОГИКА ДАННЫХ ---
+        async function loadAll() {
+            try {
+                // 1. Загружаем статистику (УДАЛИ ПРОБЕЛЫ)
+                const statRes = await fetch("https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/data/stats.json".replace(/\s/g, ''));
+                const stats = await statRes.json();
+                renderChart(stats);
 
-        lines.forEach((l) => {
-            // Парсим данные
-            const flagMatch = l.match(/\[(.*?)\]/);
-            const flag = flagMatch ? flagMatch[1] : "🌍";
-            
-            const speedMatch = l.match(/(\d+\.?\d*)\s*Mbps/i);
-            const speed = speedMatch ? parseFloat(speedMatch[1]) : 0;
-            
-            const pingMatch = l.match(/(\d+)\s*ms/i);
-            const ping = pingMatch ? parseInt(pingMatch[1]) : 0;
+                // 2. Загружаем узлы (УДАЛИ ПРОБЕЛЫ)
+                const res = await fetch("https://raw.githubusercontent.com/kudryash0vv/kudryash0vv.YKTFLOW/main/configs/kudryash0vv_YKTFLOW_mobile.txt".replace(/\s/g, ''));
+                const text = await res.text();
+                const lines = text.split('\n').filter(l => l.includes('://') && !l.startsWith('#'));
+                
+                let totalSpeed = 0, totalPing = 0, countries = new Set(), tableRows = "";
+                lines.forEach((l, i) => {
+                    const flag = l.match(/\[(.*?)\]/)?.[1] || "🌍";
+                    const speed = parseFloat(l.match(/(\d+\.\d+) Mbps/)?.[1] || 0);
+                    const ping = parseInt(l.match(/(\d+)ms/)?.[1] || 0);
+                    totalSpeed += speed; totalPing += ping; countries.add(flag);
+                    if (i < 6) tableRows += `<tr><td>${flag} NODE</td><td class="speed-tag">${speed.toFixed(1)} Mb/s</td><td>${ping}ms</td><td style="color:#00ff88">ONLINE</td></tr>`;
+                });
 
-            // ❄️ ЖЕСТКИЙ СКИП: если пинг > 3000 или равен 0, узел идет в мусорку
-            if (ping > 0 && ping <= 3000) {
-                totalPing += ping;
-                totalSpeed += speed;
-                validNodes++;
-                if (flag !== "🌍") countries.add(flag);
+                document.getElementById('stat-nodes').innerText = lines.length;
+                document.getElementById('stat-speed').innerText = (totalSpeed / lines.length).toFixed(1) + "M";
+                document.getElementById('stat-ping').innerText = Math.round(totalPing / lines.length) + "ms";
+                document.getElementById('stat-countries').innerText = countries.size;
+                document.getElementById('node-table').querySelector('tbody').innerHTML = tableRows;
+            } catch (e) { console.log(e); }
+        }
 
-                // Добавляем в таблицу только живые узлы (первые 8)
-                if (validNodes <= 8) {
-                    tableRows += `
-                        <tr>
-                            <td>[${flag}] NODE-${validNodes}</td>
-                            <td class="speed-tag">${speed.toFixed(1)} Mb/s</td>
-                            <td>${ping}ms</td>
-                            <td style="color:#00ff88">STABLE</td>
-                        </tr>`;
+        function renderChart(data) {
+            const ctx = document.getElementById('loadChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(p => p.t),
+                    datasets: [{ label: 'Nodes', data: data.map(p => p.n), borderColor: '#00d4ff', backgroundColor: 'rgba(0, 212, 255, 0.1)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0 }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { grid: { display: false }, ticks: { color: '#444', size: 9 } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#444', size: 9 } } }
                 }
-            }
-        });
-
-        // Расчет средних на основе ТОЛЬКО живых узлов
-        const avgSpeed = validNodes > 0 ? (totalSpeed / validNodes).toFixed(1) : "0.0";
-        const avgPing = validNodes > 0 ? Math.round(totalPing / validNodes) : "--";
-
-        // Обновляем UI
-        document.getElementById('stat-nodes').innerText = validNodes || "--";
-        document.getElementById('stat-speed').innerText = avgSpeed + "M";
-        document.getElementById('stat-ping').innerText = avgPing + "ms";
-        document.getElementById('stat-countries').innerText = countries.size || "0";
-        
-        const tbody = document.querySelector('#node-table tbody');
-        if (tbody) tbody.innerHTML = tableRows || '<tr><td colspan="4">Низкопингвых узлов не найдено</td></tr>';
-
-    } catch (e) { 
-        console.error("Ошибка:", e);
-        document.getElementById('stat-nodes').innerText = "ERR";
-    }
-}
-
-
-        window.onload = analyze;
+            });
+        }
+        window.onload = loadAll;
     </script>
 </body>
 </html>
